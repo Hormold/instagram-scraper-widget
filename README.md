@@ -55,12 +55,21 @@ redis-server
 npm start
 ```
 
+## Widgets
+
+### Profile Widget
+
+```html
+<iframe src="http://localhost:3000/widget/{username}" width="300" height="400" frameborder="0"></iframe>
+```
+
+
 ## API Endpoints
 
 ### Scrape Instagram Profile
 
 ```http
-GET /scrape/{username}
+GET /scrape?username={username}
 ```
 
 #### Response
