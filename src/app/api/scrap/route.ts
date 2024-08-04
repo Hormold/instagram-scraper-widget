@@ -1,8 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { scrapeInstagram } from "../../utils/scraper";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest, res: NextResponse) {
   const { searchParams } = new URL(req.url!);
   const username = searchParams.get("username");
 
