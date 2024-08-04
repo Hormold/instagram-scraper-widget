@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Instagram Scraper and Widget Generator
 
-## Getting Started
+This project is an open-source backend service that scrapes data from Instagram and generates widgets based on the scraped data. It utilizes Redis for caching and requires a proxy for making requests to Instagram.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Scrapes Instagram user profile information and posts
+- Caches responses in Redis to reduce the load on Instagram
+- Generates widgets based on the scraped data
+- Manages session handling with Instagram
+
+## Requirements
+
+- Node.js
+- Redis
+- Proxy service
+
+## Installation
+
+1. Clone the repository:
+
+```sh
+git clone https://github.com/hormold/instagram-scraper-widget.git
+cd instagram-scraper-widget
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+3. Set up environment variables:
 
-## Learn More
+Create a `.env` file in the root of the project and add the following variables:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+REDIS_URL=redis://localhost:6379
+PROXY_URL=https://your-proxy-service.com/{session}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+My recommendation for a proxy service is [Scraper API](https://dashboard.suborbit.al/register?code=hormold), which provides a session-based proxy service for scraping Instagram and other websites. You can generate Residential or Datacenter proxies with unique sessions for each user.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Usage
 
-## Deploy on Vercel
+1. Start the Redis server:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```sh
+redis-server
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+2. Run the backend service:
+
+```sh
+npm start
+```
+
+## API Endpoints
+
+### Scrape Instagram Profile
+
+```http
+GET /scrape/{username}
+```
+
+#### Response
+
+```json
+{
+  "username": "string",
+  "fullname": "string",
+  "description": "string",
+  "profilePhoto": "string",
+  "metrics": {
+    "followers": "number",
+    "following": "number",
+    "posts": "number"
+  },
+  "posts": [
+    {
+      "shortcode": "string",
+      "photo": "string",
+      "accessibility_caption": "string",
+      "caption": "string",
+      "location": "string",
+      "likes": "number",
+      "comments": "number"
+    }
+  ]
+}
+```
+
+## Session Management
+
+- Generates a unique session ID for each user
+- Stores session data in Redis with expiration
+- Retrieves and reuses last working session if valid
+- Revokes session if invalid response is received from Instagram
+- Updates session activity to prevent expiration
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
