@@ -24,7 +24,7 @@ export default async function InstagramWidget({ params, searchParams }: PageProp
 				<div className="flex items-center space-x-2">
 					<a href={`https://www.instagram.com/${username}/`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
 					<div className="w-9 h-9 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-						<Image src={`/api/proxy?url=${Buffer.from(profile.profilePhoto).toString('base64')}`} alt={profile.username} width={32} height={32} className="rounded-full" />
+						<img src={`/api/proxy?url=${Buffer.from(profile.profilePhoto).toString('base64')}`} alt={profile.username} width={32} height={32} className="rounded-full" />
 					</div>
 					<div>
 						<span className="font-semibold text-md block">{profile.fullname}</span>
@@ -58,7 +58,7 @@ export default async function InstagramWidget({ params, searchParams }: PageProp
 			{profile.posts.slice(0, photoCount).map((post: any, index: number) => (
 				<div key={index} className="relative group">
 					<a href={`https://www.instagram.com/p/${post.shortcode}/`} target="_blank" rel="noopener noreferrer">
-					<Image
+					<img
 						src={`/api/proxy?url=${Buffer.from(post.photo).toString('base64')}`}
 						alt={post.accessibility_caption || ""}
 						width={320}
