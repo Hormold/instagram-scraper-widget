@@ -16,9 +16,11 @@ const CompactInstagramProfile = ({ profile, showHeader = true, showCounters = tr
           
           <div className="flex items-center space-x-2">
             <a href={`https://www.instagram.com/${username}/`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
-            <span className="font-semibold text-sm">{fullname}</span>
+              <span className="font-semibold text-sm">{fullname}</span>
             </a>
-            <span className="text-xs text-gray-500">@{username}</span>
+            <a href={`https://www.instagram.com/${username}/`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
+              <span className="text-xs text-gray-500">@{username}</span>
+            </a>
             {showCounters && (
             <span className="text-xs text-gray-500">
               {metrics.posts} posts • {metrics.followers} followers • {metrics.following} following

@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   description: "Generate an Instagram widget for your website",
 };
 
+const merge = (...classNames: (string | undefined)[]) =>
+  classNames.filter(Boolean).join(" ");
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={merge(inter.className, 'bg-transparent')}>{children}</body>
     </html>
   );
 }
