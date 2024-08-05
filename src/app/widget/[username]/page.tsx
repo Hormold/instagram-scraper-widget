@@ -1,17 +1,24 @@
 "use server";
 import { Camera, Heart, MessageCircle } from "lucide-react";
 import { scrapeInstagram } from "../../utils/scraper";
-import Image from 'next/image';
+import WidgetCompactHeader from "@/src/app/components/WidgetCompactHeader";
+import WidgetFullHeader from "@/src/app/components/WidgetFullHeader";
 
 interface PageProps {
-  params: { username: string };
-  searchParams: { showHeader?: string; photoCount?: string, showCounters?: string };
+	params: { username: string };
+	searchParams: {
+		showHeader?: string;
+		photoCount?: string;
+		showCounters?: string;
+		headerStyle?: "full" | "compact";
+	};
 }
 
-export default async function InstagramWidget({ params, searchParams }: PageProps) {
+export default async function InstagramWidget({ params, searchParams, }: PageProps) {
   const username = params.username;
   const showHeader = searchParams.showHeader !== "false";
   const showCounters = searchParams.showCounters !== "false";
+  const headerStyle = searchParams.headerStyle ?? "full";
   const photoCount = parseInt(searchParams.photoCount || "6", 10);
 
   try {
@@ -19,40 +26,10 @@ export default async function InstagramWidget({ params, searchParams }: PageProp
 
     return (
       <div className="bg-white p-4 rounded-lg shadow">
-    	{showHeader && (
-			<div className="flex items-center justify-between p-4 border-b">
-				<div className="flex items-center space-x-2">
-					<a href={`https://www.instagram.com/${username}/`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2">
-					<div className="w-9 h-9 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-						<img src={`/api/proxy?url=${Buffer.from(profile.profilePhoto).toString('base64')}`} alt={profile.username} width={32} height={32} className="rounded-full" />
-					</div>
-					<div>
-						<span className="font-semibold text-md block">{profile.fullname}</span>
-						<span className="text-sm text-gray-500 block">@{profile.username}</span>
-					</div>
-					</a>
-				</div>
-				<a className="bg-[#0095F6] text-white px-6 py-1 rounded-md text-sm font-semibold" href={`https://www.instagram.com/${username}/`} target="_blank" rel="noopener noreferrer">
-					<Camera size={18} className="inline-block mr-2" />
-					Follow
-				</a>
-			</div>
-		)}
-		{showCounters && (
-		<div className="flex justify-around py-3 text-center border-b">
-			<div>
-				<div className="font-semibold">{profile.metrics.posts}</div>
-				<div className="text-gray-500 text-sm">Posts</div>
-			</div>
-			<div>
-				<div className="font-semibold">{profile.metrics.followers}</div>
-				<div className="text-gray-500 text-sm">Followers</div>
-			</div>
-			<div>
-				<div className="font-semibold">{profile.metrics.following}</div>
-				<div className="text-gray-500 text-sm">Following</div>
-			</div>
-		</div>
+    	{headerStyle === "full" ? (
+			<WidgetFullHeader profile={profile} showHeader={showHeader} showCounters={showCounters} />
+		) : (
+			<WidgetCompactHeader profile={profile} showHeader={showHeader} />
 		)}
 		<div className="grid grid-cols-3 gap-2">
 			{profile.posts.slice(0, photoCount).map((post: any, index: number) => (
