@@ -1,38 +1,12 @@
 import { advancedFetch, extractKeyValuePairs } from "./fetch";
 import crypto from "crypto";
 import redis from "./redis";
-
-interface SocialMediaProfile {
-  username: string;
-  fullname: string;
-  description: string;
-  profilePhoto: string;
-  metrics: {
-    followers: number;
-    following: number;
-    posts: number;
-  };
-  posts: Array<{
-    shortcode: string;
-    photo: string;
-    accessibility_caption: string;
-    caption: string;
-    location: string;
-    likes: number;
-    comments: number;
-  }>;
-}
-
-interface SessionData {
-  csrfToken: string;
-  mid: string;
-  cookies: string;
-  lastActive: number;
-}
-
-// Cache expiration time (in seconds)
-const CACHE_EXPIRATION = 3600; // 1 hour
-const SESSION_EXPIRATION = 600; // 10 minutes
+import { CACHE_EXPIRATION, SESSION_EXPIRATION } from "@/src/contants";
+import {
+  IInstagramResponse,
+  SessionData,
+  SocialMediaProfile,
+} from "@/src/types";
 
 // Generate a unique session ID
 function generateSessionId(): string {
@@ -167,7 +141,7 @@ export async function scrapeInstagram(
     if (cachedData) {
       body = JSON.parse(cachedData);
     } else {
-      const responseObj = await advancedFetch(
+      const responseObj = await advancedFetch<IInstagramResponse>(
         `https://www.instagram.com/api/v1/users/web_profile_info/?username=${username}`,
         proxyUrl!,
         {
@@ -204,7 +178,7 @@ export async function scrapeInstagram(
       const data = response.data;
 
       if (response.status === "fail" || !data.user) {
-        console.log("Invalid response from Instagram:", data.status, data.user);
+        console.log("Invalid response from Instagram:", data);
         await revokeSession(username, sessionId);
         throw new Error("Invalid response from Instagram");
       }

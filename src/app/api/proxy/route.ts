@@ -6,14 +6,12 @@ export async function GET(req: Request, res: Response) {
   if (!query) {
     throw new Error("Missing URL parameter");
   }
-  // unbase64 url
   query = Buffer.from(query, "base64").toString("utf-8");
 
   try {
     // Check if the image is already cached in Redis
     const cachedImage = await redis.get(query);
     if (cachedImage) {
-      console.log("Cache hit");
       return new Response(Buffer.from(cachedImage, "base64"), {
         headers: {
           "content-type": "image/jpeg", // Adjust based on your needs
@@ -45,18 +43,20 @@ export async function GET(req: Request, res: Response) {
       "sec-fetch-user": "?1",
       "upgrade-insecure-requests": "1",
     };
+
     const response = await fetch(query, {
       method: "GET",
       headers,
     });
-    console.log(response);
+
     if (!response.ok) {
       throw new Error("Failed to fetch image: " + response.statusText);
     }
+
     const image = Buffer.from(await response.arrayBuffer());
 
     // Cache the image in Redis
-    await redis.set(query, image.toString("base64"), "EX", 60 * 60); // Cache for 1 hour
+    await redis.set(query, image.toString("base64"), "EX", 7 * 24 * 60 * 60); // 1 week
 
     return new Response(image, {
       headers: {
