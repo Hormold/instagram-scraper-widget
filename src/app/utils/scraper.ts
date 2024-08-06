@@ -177,7 +177,7 @@ export async function scrapeInstagram(
       const response = responseObj.data;
       const data = response.data;
 
-      if (response.status === "fail" || !data.user) {
+      if (response.status === "fail" || !data?.user) {
         console.log("Invalid response from Instagram:", data);
         await revokeSession(username, sessionId);
         throw new Error("Invalid response from Instagram");
