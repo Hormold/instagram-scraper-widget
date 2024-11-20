@@ -86,6 +86,10 @@ async function getSession(userName: string): Promise<{
     lastActive: Date.now(),
   };
 
+  console.log(
+    `Created session for ${userName} with ID: ${sessionId}, all good. csrfToken: ${sessionData.csrfToken}, cookies: ${sessionData.cookies}, mid: ${sessionData.mid}, lastActive: ${sessionData.lastActive}`
+  );
+
   // Store session data in Redis
   await redis.setex(
     `session:${userName}:${sessionId}`,
@@ -105,6 +109,7 @@ async function revokeSession(
 ): Promise<void> {
   await redis.del(`session:${userName}:${sessionId}`);
   await redis.del(`instagram:last_working_session:${userName}`);
+  console.log(`Revoked session for ${userName} with ID: ${sessionId}`);
 }
 
 // Update session last active time
@@ -125,7 +130,8 @@ async function updateSessionActivity(
 }
 
 export async function scrapeInstagram(
-  url: string
+  url: string,
+  retryCount: number = 0
 ): Promise<SocialMediaProfile> {
   try {
     const parsedUrl = new URL(url);
@@ -178,6 +184,7 @@ export async function scrapeInstagram(
       const data = response.data;
 
       if (response.status === "fail" || !data?.user) {
+        console.log(`Session ID: ${sessionId}`);
         console.log("Invalid response from Instagram:", response);
         await revokeSession(username, sessionId);
         throw new Error("Invalid response from Instagram");
@@ -218,6 +225,10 @@ export async function scrapeInstagram(
     return result;
   } catch (error) {
     console.error("Error scraping Instagram:", error);
+    if (retryCount < 3) {
+      // Delete
+      return scrapeInstagram(url, retryCount + 1);
+    }
     throw error;
   }
 }
